@@ -5,6 +5,18 @@ let grid = [];
 
 const DIM = [20, 40];
 
+function saveCanvasAsImage() {
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  const saveStr = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}_cnv.png`;
+  saveCanvas(cnv, saveStr);
+}
+
 function preload() {
   // const path = 'rail';
   // for (let i = 0; i < 7; i++) {
@@ -27,7 +39,9 @@ function removeDuplicatedTiles(tiles) {
 }
 
 function setup() {
-  window.cnv = createCanvas(2400, 4800);
+  window.cnv = createCanvas(1200, 2400);
+  const saveButton = document.getElementById("save");
+  saveButton.addEventListener("click", saveCanvasAsImage);
   //randomSeed(15);
 
   // tiles[0] = new Tile(tileImages[0], ['AAA', 'AAA', 'AAA', 'AAA']);
@@ -74,7 +88,6 @@ function setup() {
     tempTiles = removeDuplicatedTiles(tempTiles);
     tiles = tiles.concat(tempTiles);
   }
-  console.log(tiles.length);
 
   // Generate the adjacency rules based on edges
   for (let i = 0; i < tiles.length; i++) {
