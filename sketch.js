@@ -3,7 +3,7 @@ const tileImages = [];
 
 let grid = [];
 
-const DIM = 20;
+const DIM = [20, 40];
 
 function preload() {
   // const path = 'rail';
@@ -27,7 +27,7 @@ function removeDuplicatedTiles(tiles) {
 }
 
 function setup() {
-  createCanvas(600, 600);
+  window.cnv = createCanvas(2400, 4800);
   //randomSeed(15);
 
   // tiles[0] = new Tile(tileImages[0], ['AAA', 'AAA', 'AAA', 'AAA']);
@@ -39,28 +39,28 @@ function setup() {
   // tiles[6] = new Tile(tileImages[6], ['ABA', 'ABA', 'ABA', 'ABA']);
 
   // Loaded and created the tiles
-  tiles[0]  = new Tile(tileImages[0],  ['___', '___', '___', '___']);
-  tiles[1]  = new Tile(tileImages[1],  ['___', '___', '_B_', '___']);
-  tiles[2]  = new Tile(tileImages[2],  ['___', '___', 'C_C', '___']);
+  tiles[0] = new Tile(tileImages[0], ['___', '___', '___', '___']);
+  tiles[1] = new Tile(tileImages[1], ['___', '___', '_B_', '___']);
+  tiles[2] = new Tile(tileImages[2], ['___', '___', 'C_C', '___']);
   tiles[3] = new Tile(tileImages[3], ['___', '___', 'DDD', '___']);
-  tiles[4]  = new Tile(tileImages[4],  ['_B_', '___', '_B_', '___']);
-  tiles[5]  = new Tile(tileImages[5],  ['_B_', '_B_', '_B_', '_B_']);
-  tiles[6]  = new Tile(tileImages[6],  ['___', '___', '_B_', '_B_']);
-  tiles[7]  = new Tile(tileImages[7],  ['___', '_B_', '_B_', '_B_']);
-  tiles[8]  = new Tile(tileImages[8],  ['C_C', '___', '_B_', '___']);
-  tiles[9]  = new Tile(tileImages[9],  ['C_C', '___', 'C_C', '___']);
-  tiles[10]  = new Tile(tileImages[10],  ['DDD', '___', 'C_C', '___']);
+  tiles[4] = new Tile(tileImages[4], ['_B_', '___', '_B_', '___']);
+  tiles[5] = new Tile(tileImages[5], ['_B_', '_B_', '_B_', '_B_']);
+  tiles[6] = new Tile(tileImages[6], ['___', '___', '_B_', '_B_']);
+  tiles[7] = new Tile(tileImages[7], ['___', '_B_', '_B_', '_B_']);
+  tiles[8] = new Tile(tileImages[8], ['C_C', '___', '_B_', '___']);
+  tiles[9] = new Tile(tileImages[9], ['C_C', '___', 'C_C', '___']);
+  tiles[10] = new Tile(tileImages[10], ['DDD', '___', 'C_C', '___']);
   tiles[11] = new Tile(tileImages[11], ['C_C', '___', 'C_C', 'C_C']);
   tiles[12] = new Tile(tileImages[12], ['C_C', '_B_', '___', '___']);
   tiles[13] = new Tile(tileImages[13], ['DDD', '___', 'DDD', '___']);
   tiles[14] = new Tile(tileImages[14], ['DDD', 'DDD', '___', '___']);
   tiles[15] = new Tile(tileImages[15], ['DDD', 'DDD', 'DDD', '___']);
-  tiles[16] = new Tile(tileImages[16], ['DDD', 'C_C', '___', '___']);  
+  tiles[16] = new Tile(tileImages[16], ['DDD', 'C_C', '___', '___']);
   tiles[17] = new Tile(tileImages[17], ['C_C', '___', '___', '_B_']);
   tiles[18] = new Tile(tileImages[18], ['DDD', '___', '___', 'C_C']);
   tiles[19] = new Tile(tileImages[19], ['DDD', '___', '___', '_B_']);
   tiles[20] = new Tile(tileImages[20], ['DDD', '_B_', '___', '___']);
-  
+
   for (let i = 0; i < tiles.length; i++) {
     tiles[i].index = i;
   }
@@ -87,7 +87,7 @@ function setup() {
 
 function startOver() {
   // Create cell for each spot on the grid
-  for (let i = 0; i < DIM * DIM; i++) {
+  for (let i = 0; i < DIM[0] * DIM[1]; i++) {
     grid[i] = new Cell(tiles.length);
   }
 }
@@ -115,11 +115,11 @@ function mousePressed() {
 function draw() {
   background(0);
 
-  const w = width / DIM;
-  const h = height / DIM;
-  for (let j = 0; j < DIM; j++) {
-    for (let i = 0; i < DIM; i++) {
-      let cell = grid[i + j * DIM];
+  const w = width / DIM[0];
+  const h = height / DIM[1];
+  for (let j = 0; j < DIM[1]; j++) {
+    for (let i = 0; i < DIM[0]; i++) {
+      let cell = grid[i + j * DIM[0]];
       if (cell.collapsed) {
         let index = cell.options[0];
         image(tiles[index].img, i * w, j * h, w, h);
@@ -164,16 +164,16 @@ function draw() {
   cell.options = [pick];
 
   const nextGrid = [];
-  for (let j = 0; j < DIM; j++) {
-    for (let i = 0; i < DIM; i++) {
-      let index = i + j * DIM;
+  for (let j = 0; j < DIM[1]; j++) {
+    for (let i = 0; i < DIM[0]; i++) {
+      let index = i + j * DIM[0];
       if (grid[index].collapsed) {
         nextGrid[index] = grid[index];
       } else {
         let options = new Array(tiles.length).fill(0).map((x, i) => i);
         // Look up
         if (j > 0) {
-          let up = grid[i + (j - 1) * DIM];
+          let up = grid[i + (j - 1) * DIM[0]];
           let validOptions = [];
           for (let option of up.options) {
             let valid = tiles[option].down;
@@ -182,8 +182,8 @@ function draw() {
           checkValid(options, validOptions);
         }
         // Look right
-        if (i < DIM - 1) {
-          let right = grid[i + 1 + j * DIM];
+        if (i < DIM[0] - 1) {
+          let right = grid[i + 1 + j * DIM[0]];
           let validOptions = [];
           for (let option of right.options) {
             let valid = tiles[option].left;
@@ -192,8 +192,8 @@ function draw() {
           checkValid(options, validOptions);
         }
         // Look down
-        if (j < DIM - 1) {
-          let down = grid[i + (j + 1) * DIM];
+        if (j < DIM[1] - 1) {
+          let down = grid[i + (j + 1) * DIM[0]];
           let validOptions = [];
           for (let option of down.options) {
             let valid = tiles[option].up;
@@ -203,7 +203,7 @@ function draw() {
         }
         // Look left
         if (i > 0) {
-          let left = grid[i - 1 + j * DIM];
+          let left = grid[i - 1 + j * DIM[0]];
           let validOptions = [];
           for (let option of left.options) {
             let valid = tiles[option].right;
